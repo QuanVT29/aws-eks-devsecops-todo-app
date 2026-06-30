@@ -26,7 +26,9 @@ This project demonstrates how to deploy a containerized Todo Web Application on 
 ## 📂 Project Structure
 
 ├── app/            # Application source code and Dockerfile
+
 ├── terraform/      # Terraform configurations (modules, main, variables)
+
 └── .github/        # GitHub Actions CI/CD workflows
 
 
