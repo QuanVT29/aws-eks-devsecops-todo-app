@@ -59,4 +59,4 @@ This project demonstrates how to deploy a containerized Todo Web Application on 
 
 ## 📝 Author
 
-Developed by [Your Name] – DevOps Intern aspirant. Feel free to connect or reach out!
+Developed by QuanVT29 – DevOps Intern aspirant. Feel free to connect or reach out!
