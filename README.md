@@ -38,20 +38,21 @@ This project demonstrates how to deploy a containerized Todo Web Application on 
 
 1. Initialize Terraform:
 
-cd terraform
-terraform init
+'cd terraform'
+
+'terraform init'
 
 2. Review the plan:
 
-terraform plan
+'terraform plan'
 
 3. Apply the infrastructure:
 
-terraform apply
+'terraform apply'
 
 4. 🧹 Clean Up ( To avoid unnecessary AWS costs, always destroy the resources after testing )
 
-terraform destroy
+'terraform destroy'
 
 
 <br>
