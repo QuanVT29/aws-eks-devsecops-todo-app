@@ -27,6 +27,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+
+
 # 3. Task Definition (Multi-container architecture: Frontend + Backend)
 resource "aws_ecs_task_definition" "app" {
   family                   = "${var.project_name}-task"
@@ -53,8 +55,8 @@ resource "aws_ecs_task_definition" "app" {
       environment = [
         {
           name  = "MONGO_URI"
-          # Replace with your actual MongoDB Atlas connection string
-          value = "mongodb+srv://<username>:<password>@cluster0.mongodb.net/todo-db?retryWrites=true&w=majority"
+          # Connected successfully using your MongoDB Atlas string
+          value = "mongodb+srv://todo_user:12345678@qvt.cluster0.wa1yhzj.mongodb.net/todo-db?retryWrites=true&w=majority&appName=Cluster0"
         }
       ]
     },
