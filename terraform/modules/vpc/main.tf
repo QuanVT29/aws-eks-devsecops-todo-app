@@ -1,3 +1,4 @@
+# Use the official AWS VPC community module
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
@@ -9,6 +10,7 @@ module "vpc" {
   public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
 
-  enable_nat_gateway = true # App in private subnet can go to internet pull image
+  # Enable NAT Gateway so apps in private subnets can pull images from ECR
+  enable_nat_gateway = true 
   single_nat_gateway = true
 }

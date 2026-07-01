@@ -3,6 +3,12 @@ resource "aws_ecs_cluster" "main" {
   name = "${var.project_name}-cluster"
 }
 
+# NEW: CloudWatch Log Group to store container logs
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name              = "/ecs/${var.project_name}"
+  retention_in_days = 7
+}
+
 # 2. IAM Role for ECS Task Execution 
 # Grants ECS permission to pull images from ECR and write logs to CloudWatch
 resource "aws_iam_role" "ecs_task_execution_role" {
@@ -27,8 +33,6 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-
-
 # 3. Task Definition (Multi-container architecture: Frontend + Backend)
 resource "aws_ecs_task_definition" "app" {
   family                   = "${var.project_name}-task"
@@ -41,7 +45,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-backend:latest"
+      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-backend:v1"
       cpu       = 256
       memory    = 512
       essential = true
@@ -59,10 +63,19 @@ resource "aws_ecs_task_definition" "app" {
           value = "mongodb+srv://todo_user:12345678@qvt.cluster0.wa1yhzj.mongodb.net/todo-db?retryWrites=true&w=majority&appName=Cluster0"
         }
       ]
+      # Added: Send backend container stdout/stderr to CloudWatch
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project_name}"
+          "awslogs-region"        = "us-east-1"
+          "awslogs-stream-prefix" = "backend"
+        }
+      }
     },
     {
       name      = "frontend"
-      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-frontend:latest"
+      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-frontend:v3"
       cpu       = 256
       memory    = 512
       essential = true
@@ -80,11 +93,18 @@ resource "aws_ecs_task_definition" "app" {
           condition     = "START"
         }
       ]
+      # Added: Send frontend container (Nginx) logs to CloudWatch
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project_name}"
+          "awslogs-region"        = "us-east-1"
+          "awslogs-stream-prefix" = "frontend"
+        }
+      }
     }
   ])
 }
-
-
 
 # 4. ECS Service (Updated to include Load Balancer connection)
 resource "aws_ecs_service" "app_service" {
@@ -123,7 +143,6 @@ resource "aws_lb" "main" {
   security_groups    = [var.lb_security_group_id]
   subnets            = var.public_subnets
 }
-
 
 # 6. Target Group (Points ALB traffic to ECS tasks)
 resource "aws_lb_target_group" "app" {

@@ -11,7 +11,7 @@ app.use(express.json()); // Read JSON from Frontend
 // Connect MongoDB
 const mongoURI = process.env.MONGO_URI || 'mongodb://mongo-db:27017/todo-db';
 mongoose.connect(mongoURI)
-  .then(() => console.log('Connected to MongoDB'))
+  .then(() => console.log('Connected to MongoDB Atlas Successfully!'))
   .catch(err => console.error('Could not connect to MongoDB', err));
 
 // Define Todo data structure
