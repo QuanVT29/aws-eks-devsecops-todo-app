@@ -1,8 +1,9 @@
 variable "aws_region" {
-  description = "AWS region"
+  description = "AWS region for all resources"
   default     = "us-east-1"
 }
 
 variable "project_name" {
-  default = "todo-app"
+  description = "Name of the project used for tagging and naming resources"
+  default     = "todo-app"
 }

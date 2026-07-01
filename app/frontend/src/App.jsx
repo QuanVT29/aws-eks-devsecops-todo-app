@@ -1,243 +1,90 @@
-import { useState } from 'react'
-
-import reactLogo from './assets/react.svg'
-
-import viteLogo from './assets/vite.svg'
-
-import heroImg from './assets/hero.png'
-
-import './App.css'
-
-
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import './App.css';
 
 function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputText, setInputText] = useState('');
 
-  const [count, setCount] = useState(0)
+  // Fetch data from Backend when page just loaded
+  useEffect(() => {
+    fetchTodos();
+  }, []);
 
+  const fetchTodos = async () => {
+    try {
+      const response = await axios.get('/api/todos');
+      setTodos(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
+  // Add new Todo
+  const handleAddTodo = async (e) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+    
+    try {
+      const response = await axios.post('/api/todos', { text: inputText });
+      setTodos([...todos, response.data]);
+      setInputText('');
+    } catch (error) {
+      console.error('Error adding todo:', error);
+    }
+  };
+
+  // Delete Todo
+  const handleDeleteTodo = async (id) => {
+    try {
+      await axios.delete(`/api/todos/${id}`);
+      setTodos(todos.filter(todo => todo._id !== id));
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
+  };
 
   return (
-
-    <>
-
-      <section id="center">
-
-        <div className="hero">
-
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-
-          <img src={reactLogo} className="framework" alt="React logo" />
-
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-
-        </div>
-
-        <div>
-
-          <h1>Get started</h1>
-
-          <p>
-
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-
-          </p>
-
-        </div>
-
-        <button
-
-          type="button"
-
-          className="counter"
-
-          onClick={() => setCount((count) => count + 1)}
-
-        >
-
-          Count is {count}
-
-        </button>
-
-      </section>
-
-
-
-      <div className="ticks"></div>
-
-
-
-      <section id="next-steps">
-
-        <div id="docs">
-
-          <svg className="icon" role="presentation" aria-hidden="true">
-
-            <use href="/icons.svg#documentation-icon"></use>
-
-          </svg>
-
-          <h2>Documentation</h2>
-
-          <p>Your questions, answered</p>
-
-          <ul>
-
-            <li>
-
-              <a href="https://vite.dev/" target="_blank">
-
-                <img className="logo" src={viteLogo} alt="" />
-
-                Explore Vite
-
-              </a>
-
-            </li>
-
-            <li>
-
-              <a href="https://react.dev/" target="_blank">
-
-                <img className="button-icon" src={reactLogo} alt="" />
-
-                Learn more
-
-              </a>
-
-            </li>
-
-          </ul>
-
-        </div>
-
-        <div id="social">
-
-          <svg className="icon" role="presentation" aria-hidden="true">
-
-            <use href="/icons.svg#social-icon"></use>
-
-          </svg>
-
-          <h2>Connect with us</h2>
-
-          <p>Join the Vite community</p>
-
-          <ul>
-
-            <li>
-
-              <a href="https://github.com/vitejs/vite" target="_blank">
-
-                <svg
-
-                  className="button-icon"
-
-                  role="presentation"
-
-                  aria-hidden="true"
-
-                >
-
-                  <use href="/icons.svg#github-icon"></use>
-
-                </svg>
-
-                GitHub
-
-              </a>
-
-            </li>
-
-            <li>
-
-              <a href="https://chat.vite.dev/" target="_blank">
-
-                <svg
-
-                  className="button-icon"
-
-                  role="presentation"
-
-                  aria-hidden="true"
-
-                >
-
-                  <use href="/icons.svg#discord-icon"></use>
-
-                </svg>
-
-                Discord
-
-              </a>
-
-            </li>
-
-            <li>
-
-              <a href="https://x.com/vite_js" target="_blank">
-
-                <svg
-
-                  className="button-icon"
-
-                  role="presentation"
-
-                  aria-hidden="true"
-
-                >
-
-                  <use href="/icons.svg#x-icon"></use>
-
-                </svg>
-
-                X.com
-
-              </a>
-
-            </li>
-
-            <li>
-
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-
-                <svg
-
-                  className="button-icon"
-
-                  role="presentation"
-
-                  aria-hidden="true"
-
-                >
-
-                  <use href="/icons.svg#bluesky-icon"></use>
-
-                </svg>
-
-                Bluesky
-
-              </a>
-
-            </li>
-
-          </ul>
-
-        </div>
-
-      </section>
-
-
-
-      <div className="ticks"></div>
-
-      <section id="spacer"></section>
-
-    </>
-
-  )
-
+    <div id="center">
+      <h1>Cloud DevOps Todo App</h1>
+      
+      <form onSubmit={handleAddTodo} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <input 
+          type="text" 
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Enter a new todo..."
+          style={{ padding: '10px', fontSize: '16px', borderRadius: '5px', border: '1px solid var(--border)' }}
+        />
+        <button type="submit" className="counter">Add</button>
+      </form>
+
+      <ul style={{ listStyle: 'none', padding: 0, width: '100%', maxWidth: '400px' }}>
+        {todos.map(todo => (
+          <li key={todo._id} style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              padding: '12px',
+              borderBottom: '1px solid var(--border)',
+              backgroundColor: 'var(--social-bg)',
+              marginBottom: '8px',
+              borderRadius: '5px'
+            }}>
+            <span>{todo.text}</span>
+            <button 
+              onClick={() => handleDeleteTodo(todo._id)}
+              style={{ backgroundColor: '#ff4d4f', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer' }}
+            >
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+      
+      {todos.length === 0 && <p style={{ color: 'var(--text)' }}>No todos available!</p>}
+    </div>
+  );
 }
 
-
-
-export default App 
+export default App;
