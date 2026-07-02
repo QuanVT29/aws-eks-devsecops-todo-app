@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-backend:v1"
+      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-backend:v5"
       cpu       = 256
       memory    = 512
       essential = true
@@ -60,7 +60,7 @@ resource "aws_ecs_task_definition" "app" {
         {
           name  = "MONGO_URI"
           # Connected successfully using your MongoDB Atlas string
-          value = "mongodb+srv://todo_user:12345678@qvt.cluster0.wa1yhzj.mongodb.net/todo-db?retryWrites=true&w=majority&appName=Cluster0"
+          value = "mongodb+srv://todo_user:TodoUser2026Password@qvt.cluster0.wa1yhzj.mongodb.net/todo-db?retryWrites=true&w=majority&appName=Cluster0"
         }
       ]
       # Added: Send backend container stdout/stderr to CloudWatch
@@ -75,7 +75,7 @@ resource "aws_ecs_task_definition" "app" {
     },
     {
       name      = "frontend"
-      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-frontend:v3"
+      image     = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-frontend:v5"
       cpu       = 256
       memory    = 512
       essential = true

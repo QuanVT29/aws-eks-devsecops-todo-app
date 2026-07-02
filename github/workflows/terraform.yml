@@ -13,7 +13,7 @@ on:
     paths:
       - 'terraform/**'
 
-# Define common environment variables for the workflow
+# Define common environment variables for` the workflow
 env:
   AWS_REGION: "us-east-1"
   TF_WORKING_DIR: "terraform" # Points to the root-level terraform directory
