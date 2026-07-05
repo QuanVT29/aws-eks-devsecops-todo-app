@@ -21,14 +21,13 @@ const TodoSchema = new mongoose.Schema({
 });
 const Todo = mongoose.model('Todo', TodoSchema);
 
-// --- API ROUTER ---
+// --- API ROUTER  ---
 
 // 1. Check backend status
-app.get('/', (req, res) => res.send('Backend is running!'));
-
+app.get('/api', (req, res) => res.send('Backend is running!'));
 
 // 2. Get todo list
-app.get('/todos', async (req, res) => {
+app.get('/api/todos', async (req, res) => {
   try {
     const todos = await Todo.find();
     res.json(todos);
@@ -37,9 +36,8 @@ app.get('/todos', async (req, res) => {
   }
 });
 
-
 // 3. Add new todo
-app.post('/todos', async (req, res) => {
+app.post('/api/todos', async (req, res) => {
   try {
     const newTodo = new Todo({ text: req.body.text });
     await newTodo.save();
@@ -49,9 +47,8 @@ app.post('/todos', async (req, res) => {
   }
 });
 
-
 // 4. Delete todo
-app.delete('/todos/:id', async (req, res) => {
+app.delete('/api/todos/:id', async (req, res) => {
   try {
     await Todo.findByIdAndDelete(req.params.id);
     res.json({ message: 'Deleted successfully' });
