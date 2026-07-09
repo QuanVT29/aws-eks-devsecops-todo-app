@@ -75,7 +75,7 @@ resource "aws_ecs_task_definition" "app" {
     },
     {
       name      = "frontend"
-      image = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-frontend:v1"
+      image = "222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-frontend:final-fix"
       cpu       = 256
       memory    = 512
       essential = true
