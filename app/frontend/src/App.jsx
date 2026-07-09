@@ -46,7 +46,7 @@ function App() {
 
   return (
     <div id="center">
-      <h1>Cloud DevOps Todo App</h1>
+      <h1>Cloud DevOps Todo App - CI/CD Automated</h1>
       
       <form onSubmit={handleAddTodo} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         <input 
