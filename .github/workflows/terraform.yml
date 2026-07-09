@@ -41,7 +41,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5.0" # Adjust this to match your local Terraform version
+          terraform_version: "1..0" # Adjust this to match your local Terraform version
 
       - name: Terraform Format
         id: fmt
@@ -90,7 +90,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5.0" # Adjust this to match your local Terraform version
+          terraform_version: "1.10.0" # Adjust this to match your local Terraform version
 
       - name: Terraform Init
         run: terraform init
