@@ -38,16 +38,27 @@ The system enforces a **Shift-Left Security** methodology through two distinct a
 
 aws-terraform-todo-app/
 ├── .github/
+
 │   └── workflows/              # CI/CD pipelines for infrastructure and application deployment
+
 │       ├── terraform.yml       # Infrastructure as Code (IaC) CI/CD pipeline
+
 │       └── app-deploy.yml      # Application DevSecOps pipeline
+
 ├── app/
+
 │   ├── backend/                # Node.js API source code & Backend Dockerfile
+
 │   └── frontend/               # React.js application, Nginx configurations & Frontend Dockerfile
+
 ├── terraform/                  # AWS Infrastructure as Code (IaC) definitions
+
 │   ├── modules/                # Reusable modules: vpc, eks, security, ecr
+
 │   ├── backend.tf              # Remote State management (S3) & State Locking (DynamoDB)
+
 │   └── main.tf                 # Primary root infrastructure execution plan
+
 └── k8s/                        # Kubernetes manifests and deployment configurations
     ├── deployment-frontend.yaml
     ├── deployment-backend.yaml
@@ -59,18 +70,18 @@ aws-terraform-todo-app/
 
 ## 🛠️ Tech Stack
 
-Layer  |   Technologies & Tools
+| Layer  |   Technologies & Tools |
 
-Cloud Infrastructure  | AWS (VPC, EKS, ECR, S3, DynamoDB, IAM) 
+| Cloud Infrastructure  | AWS (VPC, EKS, ECR, S3, DynamoDB, IAM) |
 
-Infrastructure as Code |  Terraform (v1.10.0+)
+| Infrastructure as Code |  Terraform (v1.10.0+) |
 
-Container Orchestration |  Kubernetes (AWS EKS v1.30+)
+| Container Orchestration |  Kubernetes (AWS EKS v1.30+) |
 
-Managed Database  |   MongoDB Atlas (Cloud Managed)
+| Managed Database  |   MongoDB Atlas (Cloud Managed) |
 
-DevSecOps & Security |   Checkov, Trivy, SonarQube
+| DevSecOps & Security |   Checkov, Trivy, SonarQube |
 
-CI/CD Automation |    GitHub Actions
+| CI/CD Automation |    GitHub Actions |
 
 
