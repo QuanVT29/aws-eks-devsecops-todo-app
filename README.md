@@ -30,7 +30,7 @@ The system enforces a **Shift-Left Security** methodology through two distinct a
 
 - Container Image Vulnerability Scanning: Utilizes Trivy to perform deep layer-by-layer scanning of Docker images prior to pushing them to AWS ECR, preventing deprecated or vulnerable packages from reaching production.
 
-
+![AWS auto pipeline](screenshots/Security&Automation-Pipeline.png)
 
 <br>
 
