@@ -36,52 +36,49 @@ The system enforces a **Shift-Left Security** methodology through two distinct a
 
 ## 📂 Project Structure
 
+```text
 aws-terraform-todo-app/
 ├── .github/
-
-│   └── workflows/              # CI/CD pipelines for infrastructure and application deployment
-
-│       ├── terraform.yml       # Infrastructure as Code (IaC) CI/CD pipeline
-
-│       └── app-deploy.yml      # Application DevSecOps pipeline
-
+│   └── workflows/
+│       ├── terraform.yml          # Terraform IaC Pipeline
+│       └── app-deploy.yml         # Application Deployment Pipeline
+│
 ├── app/
-
-│   ├── backend/                # Node.js API source code & Backend Dockerfile
-
-│   └── frontend/               # React.js application, Nginx configurations & Frontend Dockerfile
-
-├── terraform/                  # AWS Infrastructure as Code (IaC) definitions
-
-│   ├── modules/                # Reusable modules: vpc, eks, security, ecr
-
-│   ├── backend.tf              # Remote State management (S3) & State Locking (DynamoDB)
-
-│   └── main.tf                 # Primary root infrastructure execution plan
-
-└── k8s/                        # Kubernetes manifests and deployment configurations
-    ├── deployment-frontend.yaml
+│   ├── backend/                   # Node.js API + Dockerfile
+│   └── frontend/                  # React.js + Nginx + Dockerfile
+│
+├── terraform/
+│   ├── modules/
+│   │   ├── vpc/
+│   │   ├── eks/
+│   │   ├── ecr/
+│   │   └── security/
+│   │
+│   ├── backend.tf                 # S3 + DynamoDB Remote State
+│   └── main.tf                    # Root Infrastructure
+│
+└── k8s/
     ├── deployment-backend.yaml
-    ├── ingress.yaml            # API Gateway routing rules (handling / and /api)
-    └── hpa.yaml                # Horizontal Pod Autoscaler for dynamic resource scaling
+    ├── deployment-frontend.yaml
+    ├── ingress.yaml
+    └── hpa.yaml
+```
 
 
 <br>
 
-## 🛠️ Tech Stack
 
-| Layer  |   Technologies & Tools |
+## 🛠 Tech Stack
 
-| Cloud Infrastructure  | AWS (VPC, EKS, ECR, S3, DynamoDB, IAM) |
-
-| Infrastructure as Code |  Terraform (v1.10.0+) |
-
-| Container Orchestration |  Kubernetes (AWS EKS v1.30+) |
-
-| Managed Database  |   MongoDB Atlas (Cloud Managed) |
-
-| DevSecOps & Security |   Checkov, Trivy, SonarQube |
-
-| CI/CD Automation |    GitHub Actions |
-
+| Layer | Technologies |
+|--------|--------------|
+|  Cloud Infrastructure | AWS (VPC, EKS, IAM, ECR, S3, DynamoDB) |
+|  Infrastructure as Code | Terraform v1.10+ |
+|  Containerization | Docker |
+|  Kubernetes | Amazon EKS (v1.30+) |
+|  Database | MongoDB Atlas |
+|  DevSecOps | Trivy, Checkov, SonarQube |
+|  CI/CD | GitHub Actions |
+|  Frontend | React.js, Nginx |
+|  Backend | Node.js, Express.js |
 
