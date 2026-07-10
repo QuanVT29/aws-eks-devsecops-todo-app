@@ -29,3 +29,9 @@ variable "lb_security_group_id" {
   description = "The Security Group ID for the Load Balancer"
   type        = string
 }
+
+variable "mongo_uri" {
+  type        = string
+  description = "The connection string for MongoDB Atlas"
+  sensitive   = true     # Hide password when run terraform plan/apply
+}

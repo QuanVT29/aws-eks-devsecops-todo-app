@@ -60,7 +60,7 @@ resource "aws_ecs_task_definition" "app" {
         {
           name  = "MONGO_URI"
           # Connected successfully using your MongoDB Atlas string
-          value = "mongodb+srv://todo_user:TodoUser2026Password@cluster0.wa1yhzj.mongodb.net/todo-db?retryWrites=true&w=majority&appName=Cluster0"
+          value = var.mongo_uri
         }
       ]
       # Added: Send backend container stdout/stderr to CloudWatch

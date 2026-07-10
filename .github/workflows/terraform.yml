@@ -13,7 +13,7 @@ on:
     paths:
       - 'terraform/**'
 
-# Define common environment variables for` the workflow
+# Define common environment variables for the workflow
 env:
   AWS_REGION: "us-east-1"
   TF_WORKING_DIR: "terraform" # Points to the root-level terraform directory
@@ -41,7 +41,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1..0" # Adjust this to match your local Terraform version
+          terraform_version: "1.10.0" # Đã sửa lỗi "1..0" thành "1.10.0"
 
       - name: Terraform Format
         id: fmt
@@ -58,6 +58,8 @@ jobs:
 
       - name: Terraform Plan
         id: plan
+        env:
+          TF_VAR_mongo_uri: ${{ secrets.MONGO_URI }} # Nạp mật khẩu an toàn khi quét cấu hình hạ tầng
         run: terraform plan -no-color -out=tfplan
         continue-on-error: true # Allows the pipeline to capture the failure status in the next step
 
@@ -90,10 +92,12 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.10.0" # Adjust this to match your local Terraform version
+          terraform_version: "1.10.0"
 
       - name: Terraform Init
         run: terraform init
 
       - name: Terraform Apply
+        env:
+          TF_VAR_mongo_uri: ${{ secrets.MONGO_URI }} # Secure password when build
         run: terraform apply -auto-approve
