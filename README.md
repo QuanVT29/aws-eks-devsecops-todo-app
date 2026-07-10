@@ -11,7 +11,7 @@ This project demonstrates the design, deployment, and automation of a cloud-nati
 
 The project implements a multi-layered cloud security architecture designed for High Availability (HA), dynamic auto-scaling, and strict network isolation.
 
-![AWS EKS Architecture]()
+![AWS EKS Architecture](aws-eks-devsecops-todo-app/screenshots/aws-eks-architecture.png)
 
 ---
 
