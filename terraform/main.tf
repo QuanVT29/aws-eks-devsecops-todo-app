@@ -19,5 +19,5 @@ module "compute" {
   public_subnets        = module.vpc.public_subnets
   ecs_security_group_id = module.security.ecs_sg_id
   lb_security_group_id  = module.security.lb_sg_id
-  mongo_uri = var.mongo_uri
+  mongo_uri             = var.mongo_uri
 }
