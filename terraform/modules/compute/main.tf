@@ -115,10 +115,9 @@ resource "aws_ecs_service" "app_service" {
   desired_count   = 1
 
   network_configuration {
-    subnets          = var.public_subnets
+    subnets          = var.private_subnets
     security_groups  = [var.ecs_security_group_id]
-    # Đổi từ false sang true để nhận IP công khai kết nối được tới MongoDB Atlas
-    assign_public_ip = true   
+    assign_public_ip = false   
   }
 
   # Connect ECS Service to the Application Load Balancer
@@ -156,10 +155,10 @@ resource "aws_lb_target_group" "app" {
   health_check {
     path                = "/"
     healthy_threshold   = 2
-    unhealthy_threshold = 10
-    timeout             = 60
-    interval            = 300
-    matcher             = "200,301,302" # Accept standard HTTP success codes
+    unhealthy_threshold = 3   
+    timeout             = 5   
+    interval            = 30  
+    matcher             = "200,301,302"
   }
 }
 
@@ -173,4 +172,8 @@ resource "aws_lb_listener" "http" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app.arn
   }
+}
+
+output "alb_dns_name" {
+  value = aws_lb.main.dns_name
 }

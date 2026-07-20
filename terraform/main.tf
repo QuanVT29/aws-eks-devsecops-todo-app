@@ -21,3 +21,7 @@ module "compute" {
   lb_security_group_id  = module.security.lb_sg_id
   mongo_uri             = var.mongo_uri
 }
+
+output "app_url" {
+  value = module.compute.alb_dns_name
+}
