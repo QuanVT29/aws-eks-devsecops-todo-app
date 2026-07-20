@@ -40,28 +40,28 @@ The system enforces a **Shift-Left Security** methodology through two distinct a
 aws-terraform-todo-app/
 ├── .github/
 │   └── workflows/
-│       ├── terraform.yml          # Terraform IaC Pipeline
-│       └── app-deploy.yml         # Application Deployment Pipeline
+│       ├── terraform.yml          # Terraform IaC Pipeline (Validate, Plan, Apply)
+│       └── app-deploy.yml         # DevSecOps Pipeline (Scan, Build, Push, Deploy)
 │
 ├── app/
 │   ├── backend/                   # Node.js API + Dockerfile
 │   └── frontend/                  # React.js + Nginx + Dockerfile
 │
 ├── terraform/
-│   ├── modules/
-│   │   ├── vpc/
-│   │   ├── eks/
-│   │   ├── ecr/
-│   │   └── security/
+│   ├── modules/                   
+│   │   ├── vpc/                   # Multi-AZ Network Infrastructure & NAT Gateways
+│   │   ├── eks/                   # Amazon EKS Control Plane & Node Groups
+│   │   ├── ecr/                   # Container Registries for Frontend & Backend Images
+│   │   └── security/              # IAM Roles & Fine-grained Security Groups
 │   │
-│   ├── backend.tf                 # S3 + DynamoDB Remote State
+│   ├── backend.tf                 # S3 + DynamoDB Remote State & State Locking
 │   └── main.tf                    # Root Infrastructure
 │
 └── k8s/
-    ├── deployment-backend.yaml
-    ├── deployment-frontend.yaml
-    ├── ingress.yaml
-    └── hpa.yaml
+    ├── deployment-backend.yaml    # Backend Pods & MongoDB Connection Config
+    ├── deployment-frontend.yaml   # Frontend Nginx Pods Configuration
+    ├── ingress.yaml               # AWS ALB Ingress Controller Routing (Routing to / & /api)
+    └── hpa.yaml                   # Horizontal Pod Autoscaler (Auto-scaling by CPU/RAM)
 ```
 
 
