@@ -50,7 +50,7 @@ aws-terraform-todo-app/
 ├── terraform/
 │   ├── modules/                   
 │   │   ├── vpc/                   # Multi-AZ Network Infrastructure & NAT Gateways
-│   │   ├── ecs/                   # AWS ECS Cluster, Task Definitions & Fargate Services
+│   │   ├── eks/                   # Amazon EKS Control Plane & Node Groups
 │   │   ├── ecr/                   # Container Registries for Frontend & Backend Images
 │   │   └── security/              # IAM Roles & Fine-grained Security Groups
 │   │
