@@ -125,17 +125,17 @@ The following verification metrics confirm system stability and pipeline complia
 
 1. Dynamic Web UI Accessible via Ingress
    
-Screenshot specifications: A full-browser window captured in an Incognito tab rendering the live application via the ALB/Ingress endpoint. The page title must display "CI/CD Automated", the data fields load seamlessly, and the browser DevTools Console (F12) displays clean with zero execution errors.
+![](screenshots/web-app.png)
 
-3. Real-Time Data Persistence on MongoDB Atlas
+2. Real-Time Data Persistence on MongoDB Atlas
 
-Screenshot specifications: The "Browse Collections" interface on the MongoDB Atlas Cloud Console, confirming that test documents inserted via the Web UI successfully populated the todos collection.
+![](screenshots/mongodb.png)
 
-4. Successful DevSecOps Pipeline Status
+3. Successful DevSecOps Pipeline Status
 
 Screenshot specifications: The GitHub Actions dashboard displaying a successful execution run (Green Checkmark) for the application compilation and the Trivy container image vulnerability scanning stage.
 
-5. Cluster Runtime Status (Kubernetes Workloads)
+4. Cluster Runtime Status (Kubernetes Workloads)
 
 Screenshot specifications: A terminal output executing kubectl get all -n default, displaying all frontend and backend pods in a healthy Running state along with active active Ingress resources.
 
