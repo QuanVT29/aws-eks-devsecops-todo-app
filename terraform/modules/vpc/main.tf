@@ -1,5 +1,4 @@
-# Use the official AWS VPC community module
-# checkov:skip=CKV_TF_1: Trust module version
+# checkov:skip=CKV_TF_1: Trust Terraform Registry versioning
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
