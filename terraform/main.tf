@@ -31,7 +31,7 @@ module "ecr" {
 resource "kubernetes_secret" "app_secrets" {
   metadata {
     name      = "app-secrets"
-    namespace = "default"
+    namespace = "todo-app"
   }
 
   data = {
