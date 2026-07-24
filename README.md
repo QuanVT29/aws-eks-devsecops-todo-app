@@ -124,19 +124,28 @@ kubectl apply -f .
 
 The following verification metrics confirm system stability and pipeline compliance post-automation:
 
-1. Dynamic Web UI Accessible via Ingress
+### 1. Dynamic Web UI Accessible via Ingress
    
 ![](screenshots/web-app.png)
 
-2. Real-Time Data Persistence on MongoDB Atlas
+<br>
+
+
+### 2. Real-Time Data Persistence on MongoDB Atlas
 
 ![](screenshots/mongodb.png)
 
-3. Successful DevSecOps Pipeline Status
+<br>
+
+
+### 3. Successful DevSecOps Pipeline Status
 
 ![](screenshots/DevSecOps_Pipeline.png)
 
-4. Cluster Runtime Status (Kubernetes Workloads)
+<br>
+
+
+### 4. Cluster Runtime Status (Kubernetes Workloads)
 
 ![](screenshots/Kubernetes_Workloads.png) 
 
