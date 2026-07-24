@@ -58,6 +58,7 @@ aws-terraform-todo-app/
 │   └── main.tf                    # Root Infrastructure
 │
 └── k8s/
+    ├── namespace.yaml             # Isolated Kubernetes Environment Definition
     ├── deployment-backend.yaml    # Backend Pods & MongoDB Connection Config
     ├── deployment-frontend.yaml   # Frontend Nginx Pods Configuration
     ├── ingress.yaml               # AWS ALB Ingress Controller Routing (Routing to / & /api)
