@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: todo-backend
+spec:
+  replicas: 2 # Run at least 2 Pods to ensure High Availability (HA)
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+      - name: backend
+        # TODO: The CI/CD pipeline will replace this image URL with the actual link from ECR.
+        image: 222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-app-backend:v1
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: mongo_uri
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+---
+# A ClusterIP service that allows internal cluster components (such as Ingress or Frontend) to call the Backend.
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: todo-backend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000

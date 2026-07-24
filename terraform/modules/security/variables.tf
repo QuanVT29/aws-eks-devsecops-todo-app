@@ -1,11 +1,4 @@
-# terraform/modules/security/variables.tf
-
 variable "project_name" {
-  description = "The name of the project"
-  type        = string
-}
-
-variable "vpc_id" {
-  description = "The ID of the VPC"
+  description = "Name of the project used as a prefix for IAM resources"
   type        = string
 }

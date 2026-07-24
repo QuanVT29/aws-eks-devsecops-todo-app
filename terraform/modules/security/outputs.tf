@@ -1,3 +1,4 @@
-# outputs.tf
-output "lb_sg_id" { value = aws_security_group.lb_sg.id }
-output "ecs_sg_id" { value = aws_security_group.ecs_sg.id }
+output "alb_controller_policy_arn" {
+  description = "ARN of the IAM Policy granting permissions to the AWS Load Balancer Controller"
+  value       = aws_iam_policy.alb_controller_policy.arn
+}

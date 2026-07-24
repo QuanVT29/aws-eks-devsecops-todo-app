@@ -1,48 +1,10 @@
-# Security Group for Load Balancer (Allows HTTP traffic from anywhere)
-resource "aws_security_group" "lb_sg" {
-  name   = "${var.project_name}-lb-sg"
-  vpc_id = var.vpc_id
+# IAM Policy granting permissions for AWS Load Balancer Controller to interact with AWS ALB/NLB
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+resource "aws_iam_policy" "alb_controller_policy" {
+  name        = "${var.project_name}-AWSLoadBalancerControllerIAMPolicy"
+  path        = "/"
+  description = "IAM policy for AWS Load Balancer Controller in EKS"
 
-# Security Group for ECS Tasks
-resource "aws_security_group" "ecs_sg" {
-  name   = "${var.project_name}-ecs-sg"
-  vpc_id = var.vpc_id
-
-  # 1. Cho phép ALB kết nối vào Frontend (port 80)
-  ingress {
-    from_port       = 80 
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lb_sg.id] 
-  }
-
-  # 2. Cho phép giao tiếp nội bộ giữa Nginx và Node.js (port 3000)
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # Official standard policy file from AWS for EKS Ingress Controller
+  policy = file("${path.module}/iam_policy.json")
 }

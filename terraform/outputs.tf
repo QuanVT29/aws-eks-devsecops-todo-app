@@ -3,13 +3,17 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
-output "load_balancer_dns" {
-  description = "The DNS name of the Load Balancer"
-  value       = module.compute.lb_dns_name
+output "eks_cluster_name" {
+  description = "The name of the EKS cluster"
+  value       = module.eks.cluster_name
 }
 
+output "ecr_frontend_url" {
+  description = "ECR Repository URL for Frontend"
+  value       = module.ecr.frontend_repo_url
+}
 
-output "website_url" {
-  description = "link access Website Todo App"
-  value       = "http://${module.compute.alb_dns_name}"
+output "ecr_backend_url" {
+  description = "ECR Repository URL for Backend"
+  value       = module.ecr.backend_repo_url
 }
