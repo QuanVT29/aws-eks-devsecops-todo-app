@@ -134,11 +134,11 @@ The following verification metrics confirm system stability and pipeline complia
 
 3. Successful DevSecOps Pipeline Status
 
-Screenshot specifications: The GitHub Actions dashboard displaying a successful execution run (Green Checkmark) for the application compilation and the Trivy container image vulnerability scanning stage.
+![](screenshots/DevSecOps_Pipeline.png)
 
 4. Cluster Runtime Status (Kubernetes Workloads)
 
-Screenshot specifications: A terminal output executing kubectl get all -n default, displaying all frontend and backend pods in a healthy Running state along with active active Ingress resources.
+
 
 <br>
 
