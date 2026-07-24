@@ -23,7 +23,8 @@ jobs:
         with:
           directory: terraform/
           framework: terraform
-          soft_fail: true 
+          soft_fail: false 
+          # check: CKV_AWS_51,CKV_AWS_136
 
 
   # 🛡️ 2. SAST & SCA (SonarQube & Dependency Audit)
@@ -83,11 +84,10 @@ jobs:
         with:
           image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_BACKEND }}:${{ github.sha }}'
           format: 'table'
-          # Start with exit-code: 0 to collect CVSS data, then later change it to 1 to block malicious code.
-          exit-code: '0' 
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1' 
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
 
       - name: Push Secure Image to ECR
         env:
