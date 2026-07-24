@@ -140,7 +140,7 @@ The following verification metrics confirm system stability and pipeline complia
 
 ### 3. Successful DevSecOps Pipeline Status
 
-![](screenshots/DevSecOps_Pipeline.png)
+![](screenshots/DevSecOps_PipeLine.png)
 
 <br>
 
