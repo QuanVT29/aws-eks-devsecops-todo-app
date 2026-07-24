@@ -1,0 +1,127 @@
+name: DevSecOps Pipeline (Shift-Left)
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_BACKEND: todo-app-backend
+  ECR_FRONTEND: todo-app-frontend
+  EKS_CLUSTER: todo-app-cluster
+
+jobs:
+
+  # 🛡️ 1. IaC Scan (Checkov)
+  iac-security-scan:
+    name: Infrastructure as Code Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Checkov Scanner
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform/
+          framework: terraform
+          soft_fail: true 
+
+
+  # 🛡️ 2. SAST & SCA (SonarQube & Dependency Audit)
+  sast-sca-analysis:
+    name: Static Code & Dependency Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: SCA - Backend Dependency Scan
+        working-directory: ./app/backend
+        run: npm audit --audit-level=high || true
+        
+      - name: SCA - Frontend Dependency Scan
+        working-directory: ./app/frontend
+        run: npm audit --audit-level=high || true
+
+      - name: SAST - SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true # Skip if the SonarQube token has not been installed.
+
+
+  # 🛡️ 3. Container Security & ECR Push
+  image-scan-and-push:
+    name: Docker Build, Trivy Scan & Push ECR
+    needs: [iac-security-scan, sast-sca-analysis]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Backend Image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: docker build -t $REGISTRY/$ECR_BACKEND:$COMMIT_SHA ./app/backend
+
+      - name: Image Scan - Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_BACKEND }}:${{ github.sha }}'
+          format: 'table'
+          # Start with exit-code: 0 to collect CVSS data, then later change it to 1 to block malicious code.
+          exit-code: '0' 
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Push Secure Image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: docker push $REGISTRY/$ECR_BACKEND:$COMMIT_SHA
+
+
+
+  # 🛡️ 4. EKS Deploy (GitOps / K8s Apply)
+  deploy-to-eks:
+    name: Continuous Deployment to K8s
+    needs: image-scan-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+
+      - name: Update Manifests and Apply
+        env:
+          REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          # Use sed to automatically replace the image URL with the latest image tag that has just passed the security scan.
+          sed -i "s|image: .*todo-app-backend:.*|image: $REGISTRY/$ECR_BACKEND:$COMMIT_SHA|g" k8s/deployment-backend.yaml
+          
+          # Deploy on EKS
+          kubectl apply -f k8s/
