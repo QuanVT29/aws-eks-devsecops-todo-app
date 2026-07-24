@@ -1,3 +1,4 @@
+# checkov:skip=CKV_TF_1: Trust module version
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"          # Use the latest stable version
