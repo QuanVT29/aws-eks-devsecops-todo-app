@@ -138,6 +138,7 @@ The following verification metrics confirm system stability and pipeline complia
 
 4. Cluster Runtime Status (Kubernetes Workloads)
 
+![](screenshots/Kubernetes_Workloads.png) 
 
 
 <br>
