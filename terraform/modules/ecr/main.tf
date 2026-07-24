@@ -15,6 +15,10 @@ resource "aws_ecr_repository" "backend" {
 
   force_delete         = true
 
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
   # Encrypt KMS (Fix CKV_AWS_136)
   encryption_configuration {
     encryption_type = "KMS"
