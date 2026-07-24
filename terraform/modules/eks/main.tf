@@ -1,5 +1,5 @@
-# checkov:skip=CKV_TF_1: Trust Terraform Registry versioning
 module "eks" {
+  #checkov:skip=CKV_TF_1: Trust Terraform Registry versioning
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"          # Use the latest stable version
 

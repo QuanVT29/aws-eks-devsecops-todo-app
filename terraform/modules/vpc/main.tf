@@ -1,5 +1,5 @@
-# checkov:skip=CKV_TF_1: Trust Terraform Registry versioning
 module "vpc" {
+  #checkov:skip=CKV_TF_1: Trust Terraform Registry versioning
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
 
