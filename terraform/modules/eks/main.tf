@@ -4,7 +4,7 @@ module "eks" {
   version = "~> 20.0"          # Use the latest stable version
 
   cluster_name    = "${var.project_name}-cluster"
-  cluster_version = "1.30"     # New Kubernetes version
+  cluster_version = "1.31"     # New Kubernetes version
 
   # Enable OIDC Provider Automatically
   enable_irsa = true
