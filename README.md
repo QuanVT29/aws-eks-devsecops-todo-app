@@ -88,6 +88,25 @@ aws-terraform-todo-app/
 
 ## 🚀 Deployment Guide
 
+### Option 1: Production Deployment (Automated via GitHub Actions)
+
+1. Infrastructure & Remote Backend: Pre-configured with S3 Bucket & DynamoDB for Terraform State locking.
+  
+2.  Trigger Deployment: Go to GitHub Repository -> Actions -> Select DevSecOps Pipeline (Shift-Left) -> Click Run workflow.
+
+3.  Automated Pipeline Execution:
+   
+- Security Scans: Checkov (IaC) & Trivy (Container Images) validate code security.
+  
+- Provisioning: Automated terraform apply provisions VPC and EKS.
+  
+- Deployment: Manifests in k8s/ are applied automatically via kubectl.
+
+
+<br>
+
+### Option 2: Local Testing & Troubleshooting (Manual Fallback
+
 Step 1: Remote State & Backend Initialization
 Ensure the AWS CLI is configured locally and Terraform is installed. Initialize an S3 Bucket and a DynamoDB table via the AWS Console to handle state locking and storage securely.
 
