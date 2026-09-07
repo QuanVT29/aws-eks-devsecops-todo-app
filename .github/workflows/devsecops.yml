@@ -1,6 +1,13 @@
 name: DevSecOps Pipeline (Shift-Left)
 
 on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "app/**"
+      - "k8s/**"
+      - "terraform/**"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 env:
