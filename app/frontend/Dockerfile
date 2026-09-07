@@ -1,20 +1,16 @@
-# Stage 1: Build React
-
-FROM node:22-alpine AS builder
-RUN npm install -g npm@latest
+# Stage 1: Build React/Vite
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run build
 
-
-
-# Stage 2: Serve with Nginx
-
+# Stage 2: Nginx Web Server
 FROM nginx:alpine
-# Copy file config into Nginx
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+RUN apk update && apk upgrade --no-cache
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

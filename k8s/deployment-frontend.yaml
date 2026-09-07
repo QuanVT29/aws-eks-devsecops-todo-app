@@ -17,8 +17,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        # TODO: The CI/CD pipeline will replace this image URL with the actual link from ECR.
-        image: 222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-app-frontend:v1
+        image: 222634368199.dkr.ecr.us-east-1.amazonaws.com/todo-app-frontend:latest
         ports:
         - containerPort: 80
         resources:
@@ -29,11 +28,13 @@ spec:
             cpu: "250m"
             memory: "256Mi"
 ---
-# Service ClusterIP cho Frontend
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: todo-app    
+  labels:
+    app: todo-frontend
 spec:
   type: ClusterIP
   selector:

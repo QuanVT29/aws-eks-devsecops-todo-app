@@ -1,18 +1,8 @@
-# Root main.tf
-
 module "vpc" {
   source       = "./modules/vpc"
   project_name = var.project_name
 }
 
- 
-module "security" {
-  source       = "./modules/security"
-  project_name = var.project_name
-}
-
-
-# CALL THE NEW EKS MODULE
 module "eks" {
   source          = "./modules/eks"
   project_name    = var.project_name
@@ -20,24 +10,37 @@ module "eks" {
   private_subnets = module.vpc.private_subnets
 }
 
+# Truyền OIDC Provider từ EKS sang Security để tạo Role IRSA
+module "security" {
+  source            = "./modules/security"
+  project_name      = var.project_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider     = module.eks.oidc_provider
+}
 
 module "ecr" {
   source       = "./modules/ecr"
   project_name = var.project_name
 }
 
+# Tự động tạo Namespace 'todo-app' trên EKS trước khi tạo Secret
+resource "kubernetes_namespace" "todo_app" {
+  metadata {
+    name = "todo-app"
+  }
+  depends_on = [module.eks]
+}
 
-# Automatically Create Kubernetes Secrets from Terraform
+# Tạo Secret chứa URI MongoDB
 resource "kubernetes_secret" "app_secrets" {
   metadata {
     name      = "app-secrets"
-    namespace = "todo-app"
+    namespace = kubernetes_namespace.todo_app.metadata[0].name
   }
 
   data = {
     mongo_uri = var.mongo_uri
   }
 
-  # Ensure the EKS cluster is fully set up before creating the Secret.
-  depends_on = [module.eks]
+  depends_on = [kubernetes_namespace.todo_app]
 }

@@ -17,3 +17,8 @@ output "ecr_backend_url" {
   description = "ECR Repository URL for Backend"
   value       = module.ecr.backend_repo_url
 }
+
+
+output "alb_controller_role_arn" {
+  value = module.security.alb_controller_role_arn
+}
