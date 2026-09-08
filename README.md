@@ -213,6 +213,8 @@ Password: Retrieve the generated secret:
 kubectl get secret --namespace monitoring monitoring-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode; echo
 ```
 
+<br>
+
 ## 📊 Screenshots & Verification
 
 The following verification metrics confirm system stability and pipeline compliance post-automation:
