@@ -1,6 +1,6 @@
 # 🚀 Cloud-Native DevSecOps Todo Application on AWS EKS
 
-This project demonstrates the design, deployment, and automation of a cloud-native, DevSecOps-aligned MERN Stack web application deployed on AWS EKS (Elastic Kubernetes Service). The entire infrastructure is managed as code (IaC) via Terraform and orchestrated using automated GitHub Actions CI/CD pipelines integrated with automated security scanning tools.
+This project demonstrates the design, deployment, and automation of a production-grade, DevSecOps-aligned full-stack web application hosted on AWS EKS (Elastic Kubernetes Service). The entire infrastructure is provisioned as code (IaC) using Terraform, automated via GitHub Actions CI/CD pipelines with automated Shift-Left security scanners (Checkov, SonarQube, npm audit, Trivy), and continuously monitored using kube-prometheus-stack (Prometheus & Grafana).
 
 ---
 
@@ -37,32 +37,47 @@ The system enforces a **Shift-Left Security** methodology through two distinct a
 ## 📂 Project Structure
 
 ```text
-aws-terraform-todo-app/
+aws-eks-devsecops-todo-app/
 ├── .github/
 │   └── workflows/
-│       ├── terraform.yml          # Terraform IaC Pipeline (Validate, Plan, Apply)
-│       └── app-deploy.yml         # DevSecOps Pipeline (Scan, Build, Push, Deploy)
+│       ├── terraform.yml          # Terraform CI/CD: fmt, init, validate, plan, apply
+│       └── devsecops.yml          # Shift-Left Security Pipeline: Checkov, SAST, Trivy, Deploy
 │
 ├── app/
-│   ├── backend/                   # Node.js API + Dockerfile
-│   └── frontend/                  # React.js + Nginx + Dockerfile
+│   ├── backend/                   # Node.js Express API + prom-client metrics
+│   │   ├── src/
+│   │   │   └── index.js           # REST API & /metrics endpoint
+│   │   ├── Dockerfile             # Hardened Alpine-based container
+│   │   └── package.json
+│   └── frontend/                  # React.js client
+│       ├── nginx/
+│       │   └── default.conf       # Reverse proxy configuration
+│       ├── Dockerfile             # Multi-stage build container
+│       └── src/
 │
 ├── terraform/
 │   ├── modules/                   
-│   │   ├── vpc/                   # Multi-AZ Network Infrastructure & NAT Gateways
-│   │   ├── eks/                   # Amazon EKS Control Plane & Node Groups
-│   │   ├── ecr/                   # Container Registries for Frontend & Backend Images
-│   │   └── security/              # IAM Roles & Fine-grained Security Groups
-│   │
-│   ├── backend.tf                 # S3 + DynamoDB Remote State & State Locking
-│   └── main.tf                    # Root Infrastructure
+│   │   ├── vpc/                   # Multi-AZ VPC, subnets, NAT Gateway
+│   │   ├── eks/                   # EKS Cluster (v1.31) & Managed Node Groups
+│   │   ├── ecr/                   # KMS-encrypted ECR repositories
+│   │   └── security/              # IAM Policies & IRSA Role for AWS Load Balancer Controller
+│   ├── backend.tf                 # Remote S3 state backend configuration
+│   ├── main.tf                    # Root orchestration module & Kubernetes Secret creation
+│   ├── outputs.tf
+│   ├── providers.tf
+│   └── variables.tf
 │
-└── k8s/
-    ├── namespace.yaml             # Isolated Kubernetes Environment Definition
-    ├── deployment-backend.yaml    # Backend Pods & MongoDB Connection Config
-    ├── deployment-frontend.yaml   # Frontend Nginx Pods Configuration
-    ├── ingress.yaml               # AWS ALB Ingress Controller Routing (Routing to / & /api)
-    └── hpa.yaml                   # Horizontal Pod Autoscaler (Auto-scaling by CPU/RAM)
+├── k8s/
+│   ├── namespace.yaml             # todo-app namespace definition
+│   ├── deployment-backend.yaml    # Backend pods deployment & ServiceMonitor annotations
+│   ├── deployment-frontend.yaml   # Frontend deployment & Service configuration
+│   ├── ingress.yaml               # Ingress resource for AWS ALB
+│   └── hpa.yaml                   # HorizontalPodAutoscaler definitions
+│
+├── monitoring/
+│   └── values.yaml                # Custom Helm values for kube-prometheus-stack
+│
+└── screenshots/                   # Verification images for portfolio evidence
 ```
 
 
@@ -78,6 +93,7 @@ aws-terraform-todo-app/
 |  Containerization | Docker |
 |  Kubernetes | Amazon EKS (v1.30+) |
 |  Database | MongoDB Atlas |
+|  Observability & Monitoring | Prometheus, Grafana, Prom-Client, Helm |
 |  DevSecOps | Trivy, Checkov, SonarQube |
 |  CI/CD | GitHub Actions |
 |  Frontend | React.js, Nginx |
@@ -114,30 +130,88 @@ Step 2: Provision Infrastructure via Terraform
 
 ```
 cd terraform
+cat <<EOF > terraform.tfvars
+mongo_uri = "your-mongodb-connection-string"
+EOF
 
 terraform init
-
-terraform plan
-
 terraform apply -auto-approve
 ```
 
-Step 3: Configure Kubernetes Cluster Context
+Step 3: Configure Cluster Access & Install ALB Controller
 
-Once the Terraform execution completes, fetch the cluster authentication context to interact with your EKS cluster using kubectl:
 
 ```text
 aws eks update-kubeconfig --region us-east-1 --name todo-app-cluster
+
+ROLE_ARN=$(terraform output -raw alb_controller_role_arn)
+VPC_ID=$(terraform output -raw vpc_id)
+
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=todo-app-cluster \
+  --set serviceAccount.create=true \
+  --set serviceAccount.name=aws-load-balancer-controller \
+  --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=$ROLE_ARN \
+  --set region=us-east-1 \
+  --set vpcId=$VPC_ID
 ```
 
-Step 4: Deploy Manifests to the Cluster
+Step 4: Deploy Application Workloads
 
 ```text
 cd ../k8s
 kubectl apply -f .
 ```
 
+
+Step 5: Deploy the Prometheus & Grafana Monitoring Stack
+
+```text
+cd ..
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm install monitoring-stack prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace \
+  -f monitoring/values.yaml
+```
 <br>
+
+
+## 🔍 Verification & Access
+
+### 1. Application Access
+
+Find the public DNS hostname of the AWS Application Load Balancer:
+```
+kubectl get ingress -n todo-app
+```
+
+Access the application by pasting the ADDRESS value into any browser:
+
+http://<k8s-todoapp-ingress-xxxx.us-east-1.elb.amazonaws.com>
+
+
+### 2. Grafana Dashboard Access
+
+Port-forward Grafana to your local workstation:
+```
+kubectl port-forward -n monitoring svc/monitoring-stack-grafana 3000:80
+```
+URL: http://localhost:3000
+
+Username: admin
+
+Password: Retrieve the generated secret:
+
+```
+kubectl get secret --namespace monitoring monitoring-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode; echo
+```
 
 ## 📊 Screenshots & Verification
 
@@ -167,6 +241,12 @@ The following verification metrics confirm system stability and pipeline complia
 ### 4. Cluster Runtime Status (Kubernetes Workloads)
 
 ![](screenshots/Kubernetes_Workloads.png) 
+
+### 5. Grafana Cluster Metrics & Application Telemetry
+
+
+
+
 
 
 <br>
