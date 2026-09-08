@@ -244,7 +244,7 @@ The following verification metrics confirm system stability and pipeline complia
 
 ### 5. Grafana Cluster Metrics & Application Telemetry
 
-
+![Monitoring](screenshots/monitoring.png)
 
 
 
